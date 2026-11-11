@@ -101,6 +101,14 @@ export default function Footer() {
                 Privacy Policy
               </Link>
             </li>
+            <li>
+              <Link
+                href="/terms-of-service"
+                className="focus-glow rounded-sm text-[14.5px] text-n-700 hover:text-brand-secondary touch:inline-flex touch:min-h-11 touch:min-w-11 touch:items-center"
+              >
+                Terms of Service
+              </Link>
+            </li>
           </ul>
           <h3 className="mt-8 text-[12.5px] font-semibold uppercase tracking-[0.06em] text-n-500">Contact</h3>
           {(contactDetails.email || contactDetails.phone) && (

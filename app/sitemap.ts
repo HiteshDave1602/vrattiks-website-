@@ -40,5 +40,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...industries.map((i) => page(`/industries/${i.slug}`, "monthly", 0.6)),
 
     page("/privacy-policy", "yearly", 0.3),
+    page("/terms-of-service", "yearly", 0.3),
   ];
 }

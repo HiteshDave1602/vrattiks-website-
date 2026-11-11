@@ -166,9 +166,18 @@ export default function HeroParticles({
         cancelAnimationFrame(frame);
       }
     });
-    io.observe(canvas);
+    /* Start the loop only once the page has loaded and the main thread is
+       idle: running it during load delayed the hero H1's paint (LCP) and
+       added blocking time on mobile. Until then the canvas is just empty. */
+    let disposed = false;
+    const idle = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 200));
+    const kick = () => idle(() => !disposed && io.observe(canvas));
+    if (document.readyState === "complete") kick();
+    else window.addEventListener("load", kick, { once: true });
 
     return () => {
+      disposed = true;
+      window.removeEventListener("load", kick);
       cancelAnimationFrame(frame);
       io.disconnect();
       ro.disconnect();

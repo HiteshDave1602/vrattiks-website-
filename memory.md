@@ -3676,3 +3676,11 @@ button and mobile menu untouched.
   overflow. Tightest case is 1024: 95px from Contact to the toggle (was 127px),
   159px from the logo. Mobile menu (390/768) renders identical markup.
 - Lint, `tsc --noEmit`, `npm run build` clean.
+
+## Domain + SEO/analytics wiring (2026-11-11)
+
+- **Production domain is `https://vrattiks.io` (no www)** — the new Next.js site fully replaces the old Vite site (`E:\Vrattiks\Vrattiks`). `SITE_URL` already defaults to it, so `NEXT_PUBLIC_SITE_URL` needs no override in Vercel. `www.vrattiks.io` should be added in Vercel as a redirect to the apex.
+- GA4 `G-K3JG8XP5QH` (same property as old site) loads in `app/layout.tsx` via `next/script`; override with `NEXT_PUBLIC_GA_ID`.
+- Home JSON-LD: Organization (+3 co-founders, LinkedIn for Hitesh/Arpit from old site) + WebSite + FAQPage (from `faqs` exported by FAQ.tsx). `/llms.txt` route generated from content.ts.
+- Old-site `/about` → `/company` (308) in next.config.ts. `/terms-of-service` ported word for word from the old site (`app/lib/termsOfService.ts`, v1.0); only change: §7.1 now points to Privacy Policy §8 (`#whatsapp-and-meta`) instead of old §4. Privacy + Terms share `components/LegalDocument.tsx`, which supports `[label](href)` and `**bold**` in strings.
+- HeroParticles loop now starts after `load` + idle: mobile Lighthouse TBT ~1,400ms → ~130ms locally.

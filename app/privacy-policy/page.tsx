@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import PrivacyPolicy from "../components/PrivacyPolicy";
+import LegalDocument from "../components/LegalDocument";
+import { privacyPolicy, privacyPolicyMeta } from "../lib/privacyPolicy";
 import { ogImage } from "../lib/site";
 
 /* Legal page, linked from the footer's Legal column. Not part of the
@@ -31,5 +32,5 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPolicyPage() {
-  return <PrivacyPolicy />;
+  return <LegalDocument title="Privacy Policy" meta={privacyPolicyMeta} sections={privacyPolicy} />;
 }

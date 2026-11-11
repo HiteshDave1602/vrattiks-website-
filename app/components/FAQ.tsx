@@ -4,7 +4,7 @@ import Reveal from "./ui/Reveal";
 import FaqBackdrop from "./FaqBackdrop";
 import FaqPattern from "./FaqPattern";
 
-const faqs = [
+export const faqs = [
   {
     question: "What does Vrattiks actually do?",
     answer:

@@ -9,9 +9,10 @@ import Industries from "./components/Industries";
 import Process from "./components/Process";
 import Testimonials from "./components/Testimonials";
 import ClientLogos from "./components/ClientLogos";
-import FAQ from "./components/FAQ";
+import FAQ, { faqs } from "./components/FAQ";
 import FinalCTA from "./components/FinalCTA";
-import { ogImage } from "./lib/site";
+import { ogImage, SITE_URL } from "./lib/site";
+import { contactDetails } from "./lib/content";
 
 export const metadata: Metadata = {
   title: {
@@ -39,13 +40,66 @@ export const metadata: Metadata = {
   },
 };
 
+/* Organization + founders (same people as app/company/page.tsx and
+   Founders.tsx — keep in step), WebSite, and the on-page FAQ. Search engines
+   and AI answer engines read this to know who runs Vrattiks and what it does. */
 const organizationJsonLd = {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Vrattiks Intelligence",
-  legalName: "Vrattiks Intelligence LLP",
-  description:
-    "Vrattiks builds AI voice agents, chatbots, workflow automation, websites, WhatsApp automation, and CRM systems for growing businesses.",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: "Vrattiks Intelligence",
+      legalName: "Vrattiks Intelligence LLP",
+      url: SITE_URL,
+      logo: `${SITE_URL}/brand/vrattiks-logo.png`,
+      description:
+        "Vrattiks builds AI voice agents, chatbots, workflow automation, websites, WhatsApp automation, and CRM systems for growing businesses.",
+      areaServed: "IN",
+      sameAs: ["https://www.linkedin.com/company/vrattiks/"],
+      ...(contactDetails.email && {
+        contactPoint: {
+          "@type": "ContactPoint",
+          contactType: "sales",
+          email: contactDetails.email,
+          ...(contactDetails.phone && { telephone: contactDetails.phone }),
+          areaServed: "IN",
+          availableLanguage: ["English", "Hindi"],
+        },
+      }),
+      founder: [
+        {
+          "@type": "Person",
+          name: "Arpit Patel",
+          jobTitle: "Co-Founder & CEO",
+          sameAs: ["https://www.linkedin.com/in/arpit-patel96/"],
+        },
+        {
+          "@type": "Person",
+          name: "Hitesh Dave",
+          jobTitle: "Co-Founder & CTO",
+          sameAs: ["https://www.linkedin.com/in/hitesh-dave-63591a143/"],
+        },
+        { "@type": "Person", name: "Ankur Rayka", jobTitle: "Co-Founder & CRO" },
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: "Vrattiks Intelligence",
+      publisher: { "@id": `${SITE_URL}/#organization` },
+      inLanguage: "en-IN",
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: faqs.map((f) => ({
+        "@type": "Question",
+        name: f.question,
+        acceptedAnswer: { "@type": "Answer", text: f.answer },
+      })),
+    },
+  ],
 };
 
 export default function Home() {

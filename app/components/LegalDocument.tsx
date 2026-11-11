@@ -3,19 +3,26 @@ import Container from "./ui/Container";
 import Eyebrow from "./ui/Eyebrow";
 import Section from "./ui/Section";
 import HeroParticles from "./HeroParticles";
-import {
-  privacyPolicy,
-  privacyPolicyMeta as meta,
-  type PolicyBlock,
-} from "@/app/lib/privacyPolicy";
+import type { PolicyBlock, PolicySection } from "@/app/lib/privacyPolicy";
+
+type LegalMeta = {
+  effectiveDate: string;
+  lastUpdated: string;
+  version: string;
+  entity: string;
+  copyright: string;
+  tagline: string;
+};
 
 const linkClass =
   "focus-glow rounded-sm font-medium break-words text-brand-secondary underline decoration-brand-secondary/30 underline-offset-2 transition-colors duration-150 hover:decoration-brand-secondary";
 
-/* Emails, http(s) URLs and bare www. hosts. The final character class keeps
-   sentence punctuation ("…data-deletion.") out of the link. */
-const linkPattern =
-  /([\w.+-]+@[\w-]+(?:\.[\w-]+)+|https?:\/\/[^\s]*[^\s.,)]|www\.[^\s]*[^\s.,)])/g;
+/* Inline markup in policy strings, in order: [label](href) links,
+   **bold**, then bare emails, http(s) URLs and www. hosts. The final
+   character class keeps sentence punctuation ("…data-deletion.") out of a
+   bare link. */
+const tokenPattern =
+  /\[([^\]]+)\]\(([^)\s]+)\)|\*\*([^*]+)\*\*|([\w.+-]+@[\w-]+(?:\.[\w-]+)+|https?:\/\/[^\s]*[^\s.,)]|www\.[^\s]*[^\s.,)])/g;
 
 /* Links in the contact-detail tables ("fields" blocks: emails, the website)
    get a 44px tap row on touch layouts. Links inside running sentences are
@@ -23,30 +30,39 @@ const linkPattern =
 const tapLinkClass = "touch:inline-flex touch:min-h-11 touch:items-center";
 
 function Linkified({ text, tap = false }: { text: string; tap?: boolean }) {
-  const parts = text.split(linkPattern);
-  return (
-    <>
-      {parts.map((part, i) => {
-        if (i % 2 === 0) return <Fragment key={i}>{part}</Fragment>;
-        const external = !part.includes("@");
-        const href = part.includes("@")
-          ? `mailto:${part}`
-          : part.startsWith("http")
-            ? part
-            : `https://${part}`;
-        return (
-          <a
-            key={i}
-            href={href}
-            className={tap ? `${linkClass} ${tapLinkClass}` : linkClass}
-            {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-          >
-            {part}
-          </a>
-        );
-      })}
-    </>
-  );
+  const out: React.ReactNode[] = [];
+  let last = 0;
+  for (const m of text.matchAll(tokenPattern)) {
+    const i = m.index;
+    if (i > last) out.push(text.slice(last, i));
+    last = i + m[0].length;
+    const [, label, labelHref, bold, bare] = m;
+    if (bold) {
+      out.push(<strong key={i} className="font-semibold text-n-900">{bold}</strong>);
+      continue;
+    }
+    const shown = label ?? bare;
+    const href = labelHref
+      ? labelHref
+      : bare.includes("@")
+        ? `mailto:${bare}`
+        : bare.startsWith("http")
+          ? bare
+          : `https://${bare}`;
+    const external = href.startsWith("http");
+    out.push(
+      <a
+        key={i}
+        href={href}
+        className={tap ? `${linkClass} ${tapLinkClass}` : linkClass}
+        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      >
+        {shown}
+      </a>,
+    );
+  }
+  if (last < text.length) out.push(text.slice(last));
+  return <>{out}</>;
 }
 
 function Block({ block }: { block: PolicyBlock }) {
@@ -85,7 +101,7 @@ function Block({ block }: { block: PolicyBlock }) {
           {block.items.map((item) => (
             <li key={item.term}>
               <strong className="font-semibold text-n-900">{item.term}</strong>
-              {": "}
+              {block.sep === ":" ? ": " : " — "}
               <Linkified text={item.text} />
             </li>
           ))}
@@ -121,10 +137,10 @@ function Block({ block }: { block: PolicyBlock }) {
   }
 }
 
-function Contents({ className = "" }: { className?: string }) {
+function Contents({ sections }: { sections: PolicySection[] }) {
   return (
-    <ol className={`flex flex-col gap-1 text-[14px] touch:gap-0 ${className}`}>
-      {privacyPolicy.map((section, i) => (
+    <ol className="flex flex-col gap-1 text-[14px] touch:gap-0">
+      {sections.map((section, i) => (
         <li key={section.id}>
           <a
             href={`#${section.id}`}
@@ -139,23 +155,31 @@ function Contents({ className = "" }: { className?: string }) {
   );
 }
 
-/* Privacy Policy. The one idea: it reads as a document, not a marketing page —
-   a numbered contents rail stays pinned beside the text on desktop so any of
-   the 19 sections is one click away, and nothing else competes with the copy.
+/* Legal document page (Privacy Policy, Terms of Service). The one idea: it reads as a document, not a marketing page —
+   a numbered contents rail stays pinned beside the text on desktop so any
+   section is one click away, and nothing else competes with the copy.
    No gradient surface. The shared particle backdrop sits behind the header
    only, fading out before the policy text so it never moves under the copy. */
-export default function PrivacyPolicy() {
+export default function LegalDocument({
+  title,
+  meta,
+  sections,
+}: {
+  title: string;
+  meta: LegalMeta;
+  sections: PolicySection[];
+}) {
   return (
-    <Section tone="paper" labelledBy="privacy-heading">
+    <Section tone="paper" labelledBy="legal-heading">
       <HeroParticles className="absolute inset-x-0 top-0 h-[360px] w-full md:h-[440px] [mask-image:linear-gradient(to_bottom,black_55%,transparent)]" />
       <Container>
         <header className="max-w-3xl">
           <Eyebrow className="mb-5">Legal</Eyebrow>
           <h1
-            id="privacy-heading"
+            id="legal-heading"
             className="font-display text-[clamp(30px,8vw,36px)] leading-[1.08] font-bold tracking-[-0.02em] text-n-900 md:text-[52px]"
           >
-            Privacy Policy
+            {title}
           </h1>
           <p className="mt-5 text-[15px] text-n-600">
             Effective Date: {meta.effectiveDate}
@@ -168,12 +192,12 @@ export default function PrivacyPolicy() {
         </header>
 
         <div className="mt-10 grid grid-cols-1 gap-10 border-t border-n-200 pt-10 lg:mt-12 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-16">
-          <nav aria-label="Privacy Policy contents" className="hidden lg:block">
+          <nav aria-label={`${title} contents`} className="hidden lg:block">
             <div className="sticky top-28">
               <h2 className="mb-4 font-body text-label font-semibold uppercase tracking-[0.06em] text-n-600">
                 Contents
               </h2>
-              <Contents />
+              <Contents sections={sections} />
             </div>
           </nav>
 
@@ -181,13 +205,13 @@ export default function PrivacyPolicy() {
             <summary className="focus-glow cursor-pointer rounded-md px-5 py-4 font-body text-label font-semibold uppercase tracking-[0.06em] text-n-700">
               Contents
             </summary>
-            <nav aria-label="Privacy Policy contents" className="px-5 pb-4">
-              <Contents />
+            <nav aria-label={`${title} contents`} className="px-5 pb-4">
+              <Contents sections={sections} />
             </nav>
           </details>
 
           <article className="max-w-[72ch] text-body text-n-700">
-            {privacyPolicy.map((section, i) => (
+            {sections.map((section, i) => (
               <section
                 key={section.id}
                 id={section.id}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Urbanist, IBM_Plex_Sans } from "next/font/google";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -27,7 +28,31 @@ export const metadata: Metadata = {
     template: "%s | Vrattiks Intelligence",
   },
   description: "AI automation solutions for growing businesses",
+  applicationName: "Vrattiks Intelligence",
+  authors: [{ name: "Vrattiks Intelligence LLP", url: SITE_URL }],
+  creator: "Vrattiks Intelligence LLP",
+  publisher: "Vrattiks Intelligence LLP",
+  keywords: [
+    "AI automation",
+    "business automation",
+    "AI voice agent",
+    "AI chatbot",
+    "WhatsApp automation",
+    "workflow automation",
+    "CRM",
+    "Vrattiks",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+  },
+  openGraph: { siteName: "Vrattiks Intelligence", locale: "en_IN", type: "website" },
+  twitter: { site: "@vrattiks" },
 };
+
+/* Same GA4 property as the old vrattiks.io site, so history carries over. */
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-K3JG8XP5QH";
 
 export default function RootLayout({
   children,
@@ -45,6 +70,10 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
+        <Script id="ga4" strategy="afterInteractive">
+          {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`}
+        </Script>
       </body>
     </html>
   );

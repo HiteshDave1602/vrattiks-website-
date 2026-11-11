@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
        lines and gradients (e.g. the AI Chatbot image), which blur at 75. */
     qualities: [75, 90],
   },
+  /* Old Vite site's URLs that Google already indexed. Permanent (308) so
+     ranking moves to the new page. */
+  async redirects() {
+    return [{ source: "/about", destination: "/company", permanent: true }];
+  },
 };
 
 export default nextConfig;

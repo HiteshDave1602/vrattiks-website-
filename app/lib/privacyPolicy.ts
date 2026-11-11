@@ -12,7 +12,7 @@ export type PolicyBlock =
   | { type: "h3"; text: string }
   | { type: "list"; items: string[] }
   /* Bold lead term followed by its explanation, e.g. "Consent — Where you…" */
-  | { type: "terms"; sep: ":"; items: { term: string; text: string }[] }
+  | { type: "terms"; sep: ":" | "—"; items: { term: string; text: string }[] }
   /* Label/value pairs; a value with several lines is an array */
   | { type: "fields"; items: { label: string; value: string | string[] }[] }
   | { type: "note"; label: string; text: string };
