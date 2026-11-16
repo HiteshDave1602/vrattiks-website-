@@ -4,7 +4,7 @@ import Industries from "../components/Industries";
 import UseCases from "../components/UseCases";
 import FinalCTA from "../components/FinalCTA";
 import { industries } from "../lib/content";
-import { ogImage } from "../lib/site";
+import { ogImage, SITE_URL } from "../lib/site";
 
 /* Section order follows vrattiks-architecture §2 (Industries):
    Industry overview → industry cards → Industry-specific CTA.
@@ -46,12 +46,12 @@ const industriesJsonLd = {
   "@context": "https://schema.org",
   "@type": "ItemList",
   name: "Industries served by Vrattiks Intelligence",
-  url: "/industries",
+  url: `${SITE_URL}/industries`,
   itemListElement: industries.map((industry, i) => ({
     "@type": "ListItem",
     position: i + 1,
     name: industry.name,
-    url: `/industries/${industry.slug}`,
+    url: `${SITE_URL}/industries/${industry.slug}`,
   })),
 };
 

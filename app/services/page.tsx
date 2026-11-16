@@ -4,7 +4,7 @@ import ServicesOverview from "../components/ServicesOverview";
 import Process from "../components/Process";
 import FinalCTA from "../components/FinalCTA";
 import { services } from "../lib/content";
-import { ogImage } from "../lib/site";
+import { ogImage, SITE_URL } from "../lib/site";
 
 /* Section order follows vrattiks-architecture §2 (Services):
    Services overview → 6 service cards → Process → CTA. */
@@ -39,7 +39,7 @@ const servicesJsonLd = {
   "@context": "https://schema.org",
   "@type": "ItemList",
   name: "Vrattiks Intelligence services",
-  url: "/services",
+  url: `${SITE_URL}/services`,
   itemListElement: services.map((service, i) => ({
     "@type": "ListItem",
     position: i + 1,
@@ -47,7 +47,7 @@ const servicesJsonLd = {
       "@type": "Service",
       name: service.name,
       description: service.description,
-      url: `/services/${service.slug}`,
+      url: `${SITE_URL}/services/${service.slug}`,
       provider: { "@type": "Organization", name: "Vrattiks Intelligence" },
     },
   })),

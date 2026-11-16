@@ -4,7 +4,7 @@ import UseCaseBreakdown from "../components/UseCaseBreakdown";
 import UseCaseJourney from "../components/UseCaseJourney";
 import FinalCTA from "../components/FinalCTA";
 import { useCases } from "../lib/content";
-import { ogImage } from "../lib/site";
+import { ogImage, SITE_URL } from "../lib/site";
 
 /* Section order follows vrattiks-architecture §2 (Use Cases):
    Use-case overview + 3 use-case cards (UseCasesIntro) → Problem → Solution →
@@ -44,13 +44,13 @@ const useCasesJsonLd = {
   "@context": "https://schema.org",
   "@type": "ItemList",
   name: "Business automation use cases from Vrattiks Intelligence",
-  url: "/use-cases",
+  url: `${SITE_URL}/use-cases`,
   itemListElement: useCases.map((useCase, i) => ({
     "@type": "ListItem",
     position: i + 1,
     name: useCase.name,
     description: useCase.solution,
-    url: `/use-cases#${useCase.slug}`,
+    url: `${SITE_URL}/use-cases#${useCase.slug}`,
   })),
 };
 

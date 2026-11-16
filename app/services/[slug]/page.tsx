@@ -9,7 +9,7 @@ import ServiceFit from "../../components/ServiceFit";
 import FinalCTA from "../../components/FinalCTA";
 import { industries, services, useCases } from "../../lib/content";
 import { serviceDetails } from "../../lib/service-details";
-import { ogImage } from "../../lib/site";
+import { ogImage, SITE_URL } from "../../lib/site";
 
 /* Service detail template (vrattiks-architecture §2): Hero → Problem → How it
    works → Key features → Benefits → Who it's for → CTA.
@@ -73,15 +73,15 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
       "@type": "Service",
       name: service.name,
       description: service.details,
-      url: `/services/${service.slug}`,
+      url: `${SITE_URL}/services/${service.slug}`,
       provider: { "@type": "Organization", name: "Vrattiks Intelligence" },
     },
     {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Services", item: "/services" },
-        { "@type": "ListItem", position: 2, name: service.name, item: `/services/${service.slug}` },
+        { "@type": "ListItem", position: 1, name: "Services", item: `${SITE_URL}/services` },
+        { "@type": "ListItem", position: 2, name: service.name, item: `${SITE_URL}/services/${service.slug}` },
       ],
     },
   ];

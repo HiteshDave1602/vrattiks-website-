@@ -3,7 +3,7 @@ import ContactHero from "../components/ContactHero";
 import ContactConsultation from "../components/ContactConsultation";
 import ContactBusinessInfo from "../components/ContactBusinessInfo";
 import { contactDetails } from "../lib/content";
-import { ogImage } from "../lib/site";
+import { ogImage, SITE_URL } from "../lib/site";
 
 /* vrattiks-architecture §2 (Contact): Contact details → Inquiry form →
    Consultation CTA → Email/phone → Relevant business information.
@@ -44,7 +44,7 @@ const contactJsonLd = {
   "@context": "https://schema.org",
   "@type": "ContactPage",
   name: "Contact Vrattiks Intelligence",
-  url: "/contact",
+  url: `${SITE_URL}/contact`,
   mainEntity: {
     "@type": "Organization",
     name: "Vrattiks Intelligence",

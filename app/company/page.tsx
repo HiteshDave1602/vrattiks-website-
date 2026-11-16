@@ -7,7 +7,7 @@ import Founders from "../components/Founders";
 import Employees from "../components/Employees";
 import WhyVrattiks from "../components/WhyVrattiks";
 import FinalCTA from "../components/FinalCTA";
-import { ogImage } from "../lib/site";
+import { ogImage, SITE_URL } from "../lib/site";
 
 /* Section order follows vrattiks-architecture §2 (Company / About Us):
    Introduction → Our story → Mission & Vision → Values/approach →
@@ -43,7 +43,7 @@ const aboutJsonLd = {
   "@context": "https://schema.org",
   "@type": "AboutPage",
   name: "About Vrattiks Intelligence",
-  url: "/company",
+  url: `${SITE_URL}/company`,
   mainEntity: {
     "@type": "Organization",
     name: "Vrattiks Intelligence",

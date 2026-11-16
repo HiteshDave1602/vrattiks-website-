@@ -10,7 +10,7 @@ import FinalCTA from "../../components/FinalCTA";
 import { industries, services, useCases } from "../../lib/content";
 import { industryDetails } from "../../lib/industry-details";
 import { serviceDetails } from "../../lib/service-details";
-import { ogImage } from "../../lib/site";
+import { ogImage, SITE_URL } from "../../lib/site";
 
 /* Industry detail template (vrattiks-architecture §2): Hero → Industry
    challenges → Vrattiks solutions → Relevant services → Relevant use cases →
@@ -73,8 +73,8 @@ export default async function IndustryDetailPage({ params }: { params: Params })
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Industries", item: "/industries" },
-      { "@type": "ListItem", position: 2, name: industry.name, item: `/industries/${industry.slug}` },
+      { "@type": "ListItem", position: 1, name: "Industries", item: `${SITE_URL}/industries` },
+      { "@type": "ListItem", position: 2, name: industry.name, item: `${SITE_URL}/industries/${industry.slug}` },
     ],
   };
 
