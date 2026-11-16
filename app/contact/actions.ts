@@ -1,6 +1,7 @@
 "use server";
 
 import nodemailer from "nodemailer";
+import { confirmationEmail, ownerEmail } from "./emails";
 
 export type InquiryField = "name" | "email" | "phone" | "company" | "message";
 
@@ -59,29 +60,23 @@ async function deliver(values: Record<InquiryField, string>) {
     return false;
   }
 
-  const text = [
-    `Name: ${values.name}`,
-    `Email: ${values.email}`,
-    `Phone: ${values.phone}`,
-    `Company: ${values.company || "Not provided"}`,
-    "",
-    values.message,
-  ].join("\n");
+  const transporter = nodemailer.createTransport({ service: "gmail", auth: { user, pass } });
 
   try {
-    const transporter = nodemailer.createTransport({ service: "gmail", auth: { user, pass } });
-    await transporter.sendMail({
-      from: `Vrattiks Website <${user}>`,
-      to,
-      replyTo: values.email,
-      subject: `New website inquiry from ${values.name}${values.company ? ` (${values.company})` : ""}`,
-      text,
-    });
-    return true;
+    await transporter.sendMail({ from: `Vrattiks Website <${user}>`, to, replyTo: values.email, ...ownerEmail(values) });
   } catch (error) {
     console.error("[contact] Gmail SMTP send failed:", error);
     return false;
   }
+
+  /* Auto-reply is best-effort: the inquiry already reached us, so a failure
+     here is logged but the visitor still sees success. */
+  try {
+    await transporter.sendMail({ from: `Vrattiks <${user}>`, to: values.email, replyTo: to, ...confirmationEmail(values) });
+  } catch (error) {
+    console.error("[contact] Confirmation email to visitor failed:", error);
+  }
+  return true;
 }
 
 export async function submitInquiry(_prev: InquiryState, formData: FormData): Promise<InquiryState> {
