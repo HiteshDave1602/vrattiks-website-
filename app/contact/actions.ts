@@ -46,13 +46,13 @@ function validate(values: Record<InquiryField, string>) {
 
 /* Delivery is Gmail SMTP via nodemailer. Needs GMAIL_USER (the Gmail address)
    and GMAIL_APP_PASSWORD (a Google App Password, not the account password).
-   CONTACT_TO_EMAIL is optional (comma-separated) and defaults to GMAIL_USER.
+   OWNER_EMAIL is optional (comma-separated) and defaults to GMAIL_USER.
    If anything is missing the visitor sees an error — an inquiry is never
    silently dropped. */
 async function deliver(values: Record<InquiryField, string>) {
   const user = process.env.GMAIL_USER;
   const pass = process.env.GMAIL_APP_PASSWORD?.replace(/\s+/g, "");
-  const to = process.env.CONTACT_TO_EMAIL || user;
+  const to = process.env.OWNER_EMAIL || user;
 
   if (!user || !pass) {
     console.error("[contact] GMAIL_USER or GMAIL_APP_PASSWORD is not set — inquiry not sent.");
