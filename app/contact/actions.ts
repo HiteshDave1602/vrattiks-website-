@@ -1,5 +1,7 @@
 "use server";
 
+import nodemailer from "nodemailer";
+
 export type InquiryField = "name" | "email" | "phone" | "company" | "message";
 
 export type InquiryState = {
@@ -42,19 +44,18 @@ function validate(values: Record<InquiryField, string>) {
   return errors;
 }
 
-/* Delivery is a plain fetch to Resend's REST API — no SDK dependency.
-   Needs RESEND_API_KEY and CONTACT_TO_EMAIL. CONTACT_FROM_EMAIL must be on a
-   domain verified in Resend; until one is, Resend's shared
-   onboarding@resend.dev sender only delivers to the Resend account's own
-   address. If anything is missing the visitor sees an error — an inquiry is
-   never silently dropped. */
+/* Delivery is Gmail SMTP via nodemailer. Needs GMAIL_USER (the Gmail address)
+   and GMAIL_APP_PASSWORD (a Google App Password, not the account password).
+   CONTACT_TO_EMAIL is optional (comma-separated) and defaults to GMAIL_USER.
+   If anything is missing the visitor sees an error — an inquiry is never
+   silently dropped. */
 async function deliver(values: Record<InquiryField, string>) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.CONTACT_TO_EMAIL;
-  const from = process.env.CONTACT_FROM_EMAIL ?? "Vrattiks Website <onboarding@resend.dev>";
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_APP_PASSWORD?.replace(/\s+/g, "");
+  const to = process.env.CONTACT_TO_EMAIL || user;
 
-  if (!apiKey || !to) {
-    console.error("[contact] RESEND_API_KEY or CONTACT_TO_EMAIL is not set — inquiry not sent.");
+  if (!user || !pass) {
+    console.error("[contact] GMAIL_USER or GMAIL_APP_PASSWORD is not set — inquiry not sent.");
     return false;
   }
 
@@ -68,28 +69,17 @@ async function deliver(values: Record<InquiryField, string>) {
   ].join("\n");
 
   try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from,
-        to: to.split(",").map((address) => address.trim()),
-        reply_to: values.email,
-        subject: `New website inquiry from ${values.name}${values.company ? ` (${values.company})` : ""}`,
-        text,
-      }),
+    const transporter = nodemailer.createTransport({ service: "gmail", auth: { user, pass } });
+    await transporter.sendMail({
+      from: `Vrattiks Website <${user}>`,
+      to,
+      replyTo: values.email,
+      subject: `New website inquiry from ${values.name}${values.company ? ` (${values.company})` : ""}`,
+      text,
     });
-
-    if (!response.ok) {
-      console.error(`[contact] Resend responded ${response.status}: ${await response.text()}`);
-      return false;
-    }
     return true;
   } catch (error) {
-    console.error("[contact] Could not reach Resend:", error);
+    console.error("[contact] Gmail SMTP send failed:", error);
     return false;
   }
 }
