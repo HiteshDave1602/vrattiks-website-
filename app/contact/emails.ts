@@ -22,7 +22,9 @@ function layout(preheader: string, body: string) {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f3fe;padding:24px 12px;">
 <tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border:1px solid #ddd7f1;border-radius:12px;overflow:hidden;font-family:${FONT};color:#16161d;">
-<tr><td style="background:#6942f1;padding:28px 32px;font-size:20px;font-weight:bold;color:#ffffff;">Vrattiks</td></tr>
+<tr><td style="background:#6942f1;padding:24px 32px;">
+<img src="${SITE_URL}/brand/vrattiks-logo-white.png" alt="Vrattiks" width="118" height="36" style="display:block;width:118px;height:36px;border:0;font-size:20px;font-weight:bold;color:#ffffff;">
+</td></tr>
 <tr><td style="height:4px;background:#b79af3;font-size:0;line-height:0;">&nbsp;</td></tr>
 <tr><td style="padding:32px;font-size:15px;line-height:1.7;">${body}</td></tr>
 <tr><td style="padding:20px 32px;border-top:1px solid #ddd7f1;font-size:12px;color:#766e93;">
